@@ -115,3 +115,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+#Esto lo agregamos para agregar el modulo de usuario que generamos y no dejar el que ofrece django por defecto
+AUTH_USER_MODEL = 'profiles_api.UserProfile'
