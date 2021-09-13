@@ -14,8 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include # Este comando lo agregamos para poder incluir las url de otras apps en el
+# proyecto raiz
 
+"""
+    El proyecto busca primero por estas url y luego pasa a las derivadas
+    es decir a las url que este definidas en el api
+"""
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', include('profiles_api.urls')) # Generamos aqui la asignacion para la url de la api
 ]
