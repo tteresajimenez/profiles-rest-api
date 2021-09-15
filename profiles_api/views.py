@@ -6,6 +6,7 @@
 """
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
 # Vamos a usar put o patch? si si entonces
 from rest_framework import status
 from rest_framework import viewsets
@@ -21,6 +22,10 @@ from rest_framework.authentication import TokenAuthentication  # Para aplicar lo
 """
 
 from rest_framework import filters # Para poder buscar perfiles por un nombre especiico
+
+# Para hacer el login
+from rest_framework.authtoken.views import ObtainAuthToken # Vista propia de django que podemos usar para generar un authtoken
+from rest_framework.settings import api_settings
 
 from profiles_api import serializers
 from profiles_api import models
@@ -156,3 +161,21 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         http://127.0.0.1:8000/api/profile/?search=teresa 
         desde esta tambien podemos modificar la busqueda cambiando el ultimo parametro (teresa)
     """
+
+
+# clase para generar el login
+class UserLoginApiView(ObtainAuthToken): # No se muestra por defecto en el navegador, por esto debemos reescribirlo para que sea visible
+    """Handle creating user authentication tokens"""
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES  # Agrega las clases renderer al authtoken view lo cual lo hara visible en el django admin
+
+"""
+    TOKEN DE AUTENTICACION -¿como funciona?
+    Cada peticion que se hace a la api tiene un header http
+    lo que hacemos es agregar el token de autenticacion para las
+    peticiones que deseamos realizar entonces cuando hacemos una 
+    peticion podemos proveer un header con la llave de autorizacion
+    luego pasaremos este token con la peticion de fomra que el django 
+    rest framework reciba dicha peticion puede reisar si el token existe
+    en la DB y retorna el usuario adecuado a el 
+"""
+

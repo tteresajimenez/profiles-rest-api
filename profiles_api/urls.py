@@ -13,5 +13,6 @@ router.register('profile', views.UserProfileViewSet) # Como en la clase tenemos 
 """
 urlpatterns=[
     path('hello-view/', views.HelloApiView.as_view()), # basicamente de aqui pasa a la peticion get de http
+    path('login/', views.UserLoginApiView.as_view()), # Agregamos la ruta para el login
     path('', include(router.urls))
 ]
