@@ -8,6 +8,8 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import BaseUserManager  # User manager que provee django por defecto
 
+from django.conf import settings #  Sirve para retornar objetos desde el archivo settings del proyecto
+
 """
     El manager se genera para que django sepa como manejar
     el modulo que creamos esto lo debemos hacer porque modificamos
@@ -87,3 +89,33 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         """Devuelve el string correspondiente al email del usuario"""
         return self.email
+
+"""
+    El primer paso para crear el feed del usuario en la api
+    es generar un nuevo modelo de django para almacenarlos items del 
+    profile feed en la db 
+    
+    Meaning - Este modulo nos va ayudar a guardar las actualizacines
+    de estado en el sistema de este modo cada que se genere un update
+    se creara a su vez un nuevo objeto profile feed y se asociara
+    dicho objeto con el usuario que lo creo
+    
+"""
+
+class ProfileFeedItem(models.Model):
+    """Profile status update"""
+    user_profile = models.ForeignKey( # Para asociar modulos en django se usan forenign key
+        settings.AUTH_USER_MODEL,  # Retorna el valor del autor user model settings, entonces si alguna vez cambiamos el AUTH_USER_MODULE a un diferente la relacion se actualiza automaticamente
+        on_delete=models.CASCADE  # (si se borra el perfil de usuario se borran los datos asociados) le dice a django que hacer si el remote field es borrado
+    )
+    status_text = models.CharField(max_length=255)  # Contiene el texto del feed update
+    created_on = models.DateTimeField(auto_now_add=True)  # Siempre que se cree un feed item se guarda la fecha en que se hizo
+
+    def __str__(self):
+        """Return the model as a string"""
+        return self.status_text
+
+    """
+       1. generamos migracion para cambios en DB 
+       2. Registramos el modulo en el django admin 
+    """

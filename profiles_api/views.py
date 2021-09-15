@@ -30,6 +30,9 @@ from rest_framework.settings import api_settings
 from profiles_api import serializers
 from profiles_api import models
 
+# from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated # solo usuarios autorizados pueden ver la api
+
 """
     Creamos la clase de la API view esta nos permite definir la
     logica para el endpoint 
@@ -178,4 +181,26 @@ class UserLoginApiView(ObtainAuthToken): # No se muestra por defecto en el naveg
     rest framework reciba dicha peticion puede reisar si el token existe
     en la DB y retorna el usuario adecuado a el 
 """
+"""
+    Ahora vamos a generar un viewset para profile feed items
+"""
+class UserProfileFeedViewSet(viewsets.ModelViewSet):
+    """Handles creating, reading and updating profile feed items"""
+    authentication_classes = (TokenAuthentication,)  # Autenticamos los request
+    serializer_class = serializers.ProfileFeedItemSerializer # Relacionamos con el serializer que creamos anteriormente
+    queryset = models.ProfileFeedItem.objects.all() # Vamos a definir la queriset podemos manejar todos los objetos
+    # para configurar permisos
+    permission_classes = (
+        permissions.UpdateOwnStatus,
+        IsAuthenticated
+    )
+    # para mantener el user_profile como read only
+    # Permite reescribir el comportamiento de la creacion de objetos
+    # se ejecuta cada que hacemos un http post al viewset
+    # cuando se crea un nuevo objeto se llama la funcion y se le pasa el serializer
+    # el serializer es un model serializer que permite guardar lo objetos del
+    # serializer en la db
+    def perform_create(self, serializer):
+        """Sets the user profile to the logged in user"""
+        serializer.save(user_profile=self.request.user) # Resquest pasa todos los datos de la peticion ncluyendo los datos de usuario si este ha sido autenticado
 

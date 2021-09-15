@@ -11,4 +11,4 @@ from profiles_api import models
 """
 # Registramos los modulos
 admin.site.register(models.UserProfile)  # le dice al admin que registre el perfil de usuario
-
+admin.site.register(models.ProfileFeedItem)

@@ -8,6 +8,7 @@ router = DefaultRouter()
 router.register('hello-viewset', views.HelloViewSet, base_name='hello-viewset')
 # registramos la viewset
 router.register('profile', views.UserProfileViewSet) # Como en la clase tenemos un queryset no es necesario estabecer un base_name
+router.register('feed', views.UserProfileFeedViewSet)
 """
     Lista de URL que concuerden con las vistas del proyecto
 """
