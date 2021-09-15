@@ -8,9 +8,19 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 # Vamos a usar put o patch? si si entonces
 from rest_framework import status
-from profiles_api import serializers
 from rest_framework import viewsets
 
+from profiles_api import permissions # Importamos el archivo donde se especificaron los permisos
+from rest_framework.authentication import TokenAuthentication  # Para aplicar los permisos
+"""
+    El tokenAuthentication sera la variable que usemos para que los
+    usuarios se autentiquen a si mismos
+    ¿Como? 
+    - genera un token random de tipo string cuando el usuario ingresa
+    - En cada peticion que necesitemos autenticar implementamos el token en el request
+"""
+from profiles_api import serializers
+from profiles_api import models
 
 """
     Creamos la clase de la API view esta nos permite definir la
@@ -77,6 +87,7 @@ class HelloApiView(APIView):
 
 class HelloViewSet(viewsets.ViewSet):
     """Test API ViewSet"""
+    serializer_class = serializers.HelloSerializer
 
     def list(self, request):
         """Return a hello message."""
@@ -122,3 +133,12 @@ class HelloViewSet(viewsets.ViewSet):
         """Handle removing an object"""
 
         return Response({'http_method': 'DELETE'})
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    """Handle creating and updating profiles"""
+    serializer_class = serializers.UserProfileSerializer
+    queryset = models.UserProfile.objects.all()
+    # Vamos a configurar de forma que genere la autenticacion
+    authentication_classes = (TokenAuthentication,) # Agregamos la coma para que se cree como tupla, se pueden agregar mas metodos de autenticacion que tambien se pondrian aqui
+    # ahora vamos a definir las clases de permiso (permission clasees) estas especifican como el usuario obtiene los permisos
+    permission_classes = (permissions.UpdateOwnProfile,) # Esto conficura el userprofileviewset para usar el token
