@@ -19,6 +19,9 @@ from rest_framework.authentication import TokenAuthentication  # Para aplicar lo
     - genera un token random de tipo string cuando el usuario ingresa
     - En cada peticion que necesitemos autenticar implementamos el token en el request
 """
+
+from rest_framework import filters # Para poder buscar perfiles por un nombre especiico
+
 from profiles_api import serializers
 from profiles_api import models
 
@@ -142,3 +145,14 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,) # Agregamos la coma para que se cree como tupla, se pueden agregar mas metodos de autenticacion que tambien se pondrian aqui
     # ahora vamos a definir las clases de permiso (permission clasees) estas especifican como el usuario obtiene los permisos
     permission_classes = (permissions.UpdateOwnProfile,) # Esto conficura el userprofileviewset para usar el token
+    # Permitir los filtros
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name', 'email',)  # Le dice al filtro backend que campos queremos usar para permitir la busqueda
+    """
+        Esto genera un boton de filtro en el navegador 
+        ¿Como funciona?
+        1. El boton agrega el parametro de busqueda como un get
+        esto se observa en la url
+        http://127.0.0.1:8000/api/profile/?search=teresa 
+        desde esta tambien podemos modificar la busqueda cambiando el ultimo parametro (teresa)
+    """
